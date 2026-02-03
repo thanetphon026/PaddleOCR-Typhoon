@@ -41,38 +41,56 @@ class OCRProcessor:
         try:
             print(f"Initializing PaddleOCR (Mode: {'GPU' if self.use_gpu else 'CPU'})...")
             
-            # Try to initialize with current settings
+            # Try to initialize with Thai settings using PP-OCRv3 (which supports 'th')
             try:
                 self.ocr = PaddleOCR(
                     # Language settings
-                    lang='th',  # Official Thai language support
+                    lang='th',  # Thai language
+                    ocr_version='PP-OCRv3',  # Specific version that supports Thai fully
                     
                     # GPU/CPU settings
                     use_gpu=self.use_gpu,
                     gpu_mem=500 if self.use_gpu else 0,
                     
                     # Performance optimization
-                    use_angle_cls=True,  # Auto-rotate text
-                    use_mp=True,  # Multi-processing
-                    total_process_num=2,  # Number of processes
+                    use_angle_cls=True,
+                    use_mp=True,
+                    total_process_num=2,
                     
                     # CPU optimization
                     enable_mkldnn=True if not self.use_gpu else False,
                     
                     # Model settings
-                    det_db_thresh=0.3,  # Detection threshold (lower = detect more)
-                    det_db_box_thresh=0.5,  # Box threshold
-                    rec_batch_num=6,  # Recognition batch size
+                    det_db_thresh=0.3,
+                    det_db_box_thresh=0.5,
+                    rec_batch_num=6,
                     
                     # Accuracy settings
-                    drop_score=0.3,  # Drop results with confidence < 0.3
+                    drop_score=0.3,
                     
                     # Display settings
-                    show_log=False,  # Suppress verbose logs
-                    use_space_char=True  # Recognize spaces
+                    show_log=False,
+                    use_space_char=True
                 )
                 
-                print(f"✓ PaddleOCR initialized successfully (Mode: {'GPU' if self.use_gpu else 'CPU'})")
+                print(f"✓ PaddleOCR initialized successfully (Mode: {'GPU' if self.use_gpu else 'CPU'}, Lang: Thai)")
+                
+            except Exception as e:
+                # If Thai initialization fails, try fallback to Chinese (ch) which contains some support
+                # or handle specific errors
+                print(f"⚠ Thai OCR initialization failed: {str(e)}")
+                print("→ Falling back to general multi-language model (Chinese/English)...")
+                
+                self.ocr = PaddleOCR(
+                    lang='ch',  # Fallback to Chinese/English
+                    use_gpu=self.use_gpu,
+                    use_angle_cls=True,
+                    use_mp=True,
+                    total_process_num=2,
+                    enable_mkldnn=True if not self.use_gpu else False,
+                    show_log=False
+                )
+                print(f"✓ PaddleOCR initialized with fallback (Mode: {'GPU' if self.use_gpu else 'CPU'}, Lang: CH/EN)")
                 
             except RuntimeError as e:
                 # If GPU initialization fails (CUDA/cuDNN issue), fallback to CPU
