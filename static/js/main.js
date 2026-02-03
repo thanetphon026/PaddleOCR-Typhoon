@@ -130,10 +130,11 @@ async function processImage() {
         displayResults(data);
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[ERROR] Fetch failed:', error);
+        console.error('[ERROR] Details:', error.message);
         hideLoading();
         btnProcess.disabled = false;
-        showError('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+        showError('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์: ' + error.message);
     }
 }
 

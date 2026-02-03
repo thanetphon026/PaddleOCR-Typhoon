@@ -45,7 +45,7 @@ class OCRProcessor:
             try:
                 self.ocr = PaddleOCR(
                     # Language settings
-                    lang='en',  # Base language (works for Thai+English mix)
+                    lang='th',  # Official Thai language support
                     
                     # GPU/CPU settings
                     use_gpu=self.use_gpu,
@@ -84,7 +84,7 @@ class OCRProcessor:
                     
                     # Retry with CPU
                     self.ocr = PaddleOCR(
-                        lang='en',
+                        lang='th',  # Thai language for CPU mode
                         use_gpu=False,
                         use_angle_cls=True,
                         use_mp=True,

@@ -107,9 +107,11 @@ class TyphoonAPI:
                         'content': prompt
                     }
                 ],
-                'temperature': 0.1,  # Low temperature for deterministic output
-                'max_tokens': 500,
-                'top_p': 0.9
+                'temperature': 0.6,
+                'max_completion_tokens': 512,
+                'top_p': 0.6,
+                'frequency_penalty': 0,
+                'stream': False  # Set to True if you want streaming
             }
             
             # Make API request
