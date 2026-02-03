@@ -10,59 +10,102 @@ from PIL import Image
 import os
 
 class OCRProcessor:
-    def __init__(self):
+    def __init__(self, force_cpu=True):
         """Initialize PaddleOCR with optimized settings for Thai+English text"""
         self.ocr = None
-        self.use_gpu = self._check_gpu_availability()
+        self.use_gpu = False if force_cpu else self._check_gpu_availability()
         self._initialize_ocr()
     
     def _check_gpu_availability(self):
         """Check if GPU is available for PaddleOCR"""
         try:
             import paddle
-            return paddle.is_compiled_with_cuda()
-        except:
+            has_cuda = paddle.is_compiled_with_cuda()
+            
+            if has_cuda:
+                # Additional check: try to see if CUDA libraries are accessible
+                try:
+                    # This will fail if CUDA/cuDNN is not properly installed
+                    import paddle.fluid as fluid
+                    return True
+                except:
+                    print("⚠ CUDA detected but libraries not accessible, using CPU mode")
+                    return False
+            return False
+        except Exception as e:
+            print(f"⚠ GPU check failed: {str(e)}, using CPU mode")
             return False
     
     def _initialize_ocr(self):
         """Initialize PaddleOCR engine with optimal settings"""
         try:
-            print(f"Initializing PaddleOCR (GPU: {self.use_gpu})...")
+            print(f"Initializing PaddleOCR (Mode: {'GPU' if self.use_gpu else 'CPU'})...")
             
-            self.ocr = PaddleOCR(
-                # Language settings
-                lang='en',  # Base language (works for Thai+English mix)
+            # Try to initialize with current settings
+            try:
+                self.ocr = PaddleOCR(
+                    # Language settings
+                    lang='en',  # Base language (works for Thai+English mix)
+                    
+                    # GPU/CPU settings
+                    use_gpu=self.use_gpu,
+                    gpu_mem=500 if self.use_gpu else 0,
+                    
+                    # Performance optimization
+                    use_angle_cls=True,  # Auto-rotate text
+                    use_mp=True,  # Multi-processing
+                    total_process_num=2,  # Number of processes
+                    
+                    # CPU optimization
+                    enable_mkldnn=True if not self.use_gpu else False,
+                    
+                    # Model settings
+                    det_db_thresh=0.3,  # Detection threshold (lower = detect more)
+                    det_db_box_thresh=0.5,  # Box threshold
+                    rec_batch_num=6,  # Recognition batch size
+                    
+                    # Accuracy settings
+                    drop_score=0.3,  # Drop results with confidence < 0.3
+                    
+                    # Display settings
+                    show_log=False,  # Suppress verbose logs
+                    use_space_char=True  # Recognize spaces
+                )
                 
-                # GPU/CPU settings
-                use_gpu=self.use_gpu,
-                gpu_mem=500 if self.use_gpu else 0,
+                print(f"✓ PaddleOCR initialized successfully (Mode: {'GPU' if self.use_gpu else 'CPU'})")
                 
-                # Performance optimization
-                use_angle_cls=True,  # Auto-rotate text
-                use_mp=True,  # Multi-processing
-                total_process_num=2,  # Number of processes
-                
-                # CPU optimization (only used when GPU unavailable)
-                enable_mkldnn=True if not self.use_gpu else False,
-                
-                # Model settings
-                det_db_thresh=0.3,  # Detection threshold (lower = detect more)
-                det_db_box_thresh=0.5,  # Box threshold
-                rec_batch_num=6,  # Recognition batch size
-                
-                # Accuracy settings
-                drop_score=0.3,  # Drop results with confidence < 0.3
-                
-                # Display settings
-                show_log=False,  # Suppress verbose logs
-                use_space_char=True  # Recognize spaces
-            )
-            
-            print(f"✓ PaddleOCR initialized successfully (GPU: {self.use_gpu})")
+            except RuntimeError as e:
+                # If GPU initialization fails (CUDA/cuDNN issue), fallback to CPU
+                if 'cudnn' in str(e).lower() or 'cuda' in str(e).lower():
+                    print(f"⚠ GPU initialization failed: {str(e)}")
+                    print("→ Falling back to CPU mode...")
+                    
+                    self.use_gpu = False
+                    
+                    # Retry with CPU
+                    self.ocr = PaddleOCR(
+                        lang='en',
+                        use_gpu=False,
+                        use_angle_cls=True,
+                        use_mp=True,
+                        total_process_num=2,
+                        enable_mkldnn=True,
+                        det_db_thresh=0.3,
+                        det_db_box_thresh=0.5,
+                        rec_batch_num=6,
+                        drop_score=0.3,
+                        show_log=False,
+                        use_space_char=True
+                    )
+                    
+                    print(f"✓ PaddleOCR initialized successfully (CPU mode)")
+                else:
+                    raise
             
         except Exception as e:
             print(f"✗ Error initializing PaddleOCR: {str(e)}")
             raise
+
     
     def preprocess_image(self, image_path):
         """

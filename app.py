@@ -23,7 +23,9 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Initialize processors
-ocr_processor = OCRProcessor()
+# force_cpu=False = Auto-detect GPU/CPU (will use GPU if available and CUDA is properly installed)
+# force_cpu=True = Force CPU mode only
+ocr_processor = OCRProcessor(force_cpu=False)  # Auto-detect mode
 typhoon_api = TyphoonAPI()
 
 @app.route('/')
@@ -129,7 +131,12 @@ if __name__ == '__main__':
     print("=" * 60)
     print("🚀 Thai Parcel OCR System Starting...")
     print("=" * 60)
+    
+    # Show device info
+    device_info = ocr_processor.get_device_info()
+    device_icon = "🎮" if device_info['device'] == 'GPU' else "💻"
     print(f"OCR Engine: {'Ready ✓' if ocr_processor.is_ready() else 'Not Ready ✗'}")
+    print(f"OCR Device: {device_icon} {device_info['device']} Mode")
     print(f"Typhoon API: {'Configured ✓' if typhoon_api.is_configured() else 'Not Configured ✗'}")
     print(f"Upload Folder: {os.path.abspath(app.config['UPLOAD_FOLDER'])}")
     print("=" * 60)
