@@ -59,10 +59,10 @@ pip install -r requirements.txt
 pip uninstall paddlepaddle -y
 
 # ติดตั้ง GPU version (CUDA 11.8)
-pip install paddlepaddle-gpu==2.6.0 -f https://www.paddlepaddle.org.cn/whl/windows/mkl/avx/stable.html
+pip install paddlepaddle-gpu==2.6.2 -f https://www.paddlepaddle.org.cn/whl/windows/mkl/avx/stable.html
 
 # หรือ CUDA 12.0
-pip install paddlepaddle-gpu==2.6.0.post120 -f https://www.paddlepaddle.org.cn/whl/windows/mkl/avx/stable.html
+pip install paddlepaddle-gpu==2.6.2.post120 -f https://www.paddlepaddle.org.cn/whl/windows/mkl/avx/stable.html
 ```
 
 ### 4. ตั้งค่า Environment Variables
