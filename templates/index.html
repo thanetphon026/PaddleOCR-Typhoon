@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Parcel OCR System | ระบบสแกนพัสดุไทย</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>📦 ระบบสแกนพัสดุไทย</h1>
+            <p>สแกนและวิเคราะห์ข้อมูลพัสดุด้วย AI อัตโนมัติ</p>
+        </header>
+
+        <!-- Error Alert -->
+        <div id="errorAlert" class="error-alert">
+            <strong>⚠️ ข้อผิดพลาด:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Upload Card -->
+        <div class="upload-card">
+            <div id="uploadZone" class="upload-zone">
+                <div class="upload-icon">📸</div>
+                <h3 class="upload-text">คลิกหรือลากรูปภาพมาวางที่นี่</h3>
+                <p class="upload-hint">รองรับไฟล์: JPG, PNG, GIF, BMP, WebP (สูงสุด 16MB)</p>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <!-- Preview -->
+            <div id="previewContainer" class="preview-container hidden">
+                <h3>รูปภาพที่เลือก:</h3>
+                <img id="previewImage" class="preview-image" alt="Preview">
+                <button id="btnProcess" class="btn-process">🚀 เริ่มสแกนพัสดุ</button>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p class="loading-text">⏳ กำลังประมวลผล...</p>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="results">
+            <div class="upload-card">
+                <h2 style="margin-bottom: 1.5rem; text-align: center;">📋 ผลการสแกน</h2>
+
+                <div class="result-item">
+                    <div class="result-label">👤 ชื่อผู้รับ</div>
+                    <div id="recipientName" class="result-value">-</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">🏠 เลขห้อง</div>
+                    <div id="roomNumber" class="result-value">-</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">🚚 บริษัทขนส่ง</div>
+                    <div id="shippingCompany" class="result-value">-</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">🔢 รหัสพัสดุ</div>
+                    <div id="trackingNumber" class="result-value">-</div>
+                </div>
+
+                <!-- Timing Stats -->
+                <div class="timing-stats">
+                    <h3>⏱️ สถิติการประมวลผล</h3>
+                    <div class="timing-grid">
+                        <div class="timing-item">
+                            <div id="paddleTime" class="timing-value">-</div>
+                            <div class="timing-label">PaddleOCR</div>
+                        </div>
+                        <div class="timing-item">
+                            <div id="typhoonTime" class="timing-value">-</div>
+                            <div class="timing-label">Typhoon API</div>
+                        </div>
+                        <div class="timing-item">
+                            <div id="totalTime" class="timing-value">-</div>
+                            <div class="timing-label">เวลารวม</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+
+</html>

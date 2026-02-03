@@ -1,0 +1,29 @@
+# Thai Parcel OCR System - Dependencies
+# Tested on Python 3.9, 3.10, 3.11 (Windows/Linux)
+
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# OCR Engine
+paddleocr==2.7.3
+paddlepaddle==2.6.0  # CPU version - see README for GPU installation
+
+# Image Processing
+opencv-python==4.9.0.80
+opencv-python-headless==4.9.0.80
+Pillow==10.2.0
+numpy==1.24.3
+
+# HTTP & API
+requests==2.31.0
+urllib3==2.1.0
+
+# Environment & Config
+python-dotenv==1.0.0
+
+# Utilities
+tqdm==4.66.1
+shapely==2.0.2
+pyclipper==1.3.0.post5
+lmdb==1.4.1
